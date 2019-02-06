@@ -1,11 +1,11 @@
 ## Raspberry Pi RFM69 Listener
 
-This deamon listens for incoming messages on the RFM69 radio module. It expects tab delimited integer text messages, with the first integer being the ID of the node. 
+This deamon listens for incoming messages on the RFM69 radio module. It expects tab delimited integer plain text messages from the nodes, with the first integer being the ID of the node. 
 
-The listen.ini file specifies what is logged, see details there. 
-
+The listen.ini file specifies what is logged, see details there.
 
 ## Installation
+
 ```bash
 cd lib
 
