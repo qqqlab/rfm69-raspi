@@ -1,3 +1,5 @@
+#include <vector>
+#include <string>
 using namespace std;
 
 #include "../lib/inih/cpp/INIReader.h"
@@ -36,22 +38,119 @@ int str2arr(const char* str, const char* seps, int *output)
 {
   char tokenstring[1024];
   strncpy(tokenstring,str,sizeof(tokenstring));
-//  char seps[] = " ,\t";
   char* token;
-  int var;
   int i = 0;
 
   token = strtok (tokenstring, seps);
   while (token != NULL)
   {
-    //sscanf (token, "%d", &var);
-    //input[i++] = var;
     output[i++] = atoi(token);
     token = strtok (NULL, seps);
   }
   return i;
 }
 
+
+vector<string> split(string str, string sep){
+    char* cstr=const_cast<char*>(str.c_str());
+    char* current;
+    vector<std::string> arr;
+    current=strtok(cstr,sep.c_str());
+    while(current != NULL){
+        arr.push_back(current);
+        current=strtok(NULL, sep.c_str());
+    }
+    return arr;
+}
+
+int rep_write(char *rx);
+void log_write(char *rx);
+void idlog_write(int id, char *rx);
+
+class Node {
+  public:
+    int id;
+    string topic;
+    vector<string> fields;
+
+string getFieldTopic(int fieldno) {
+  if(fieldno>=0 && fieldno < fields.size() ) { 
+    return topic + "/" + fields[fieldno];
+  }else{ 
+    return topic + "/" + to_string(fieldno+1);
+  }
+}
+};
+
+Node node[256];
+string topic_prefix;
+
+//######################################################
+// Message 
+//######################################################
+class Message {
+  public:
+    int rssi;
+    uint8_t buf[RH_RF69_MAX_MESSAGE_LEN+5];
+    uint8_t buflen;
+    char rx[RH_RF69_MAX_MESSAGE_LEN+5];
+    int id;
+    int val[RH_RF69_MAX_MESSAGE_LEN+5];
+    int vallen;
+    void process(RH_RF69 *r);
+    void mqtt_write();
+};
+
+void Message::process(RH_RF69 *r) {
+  buflen  = sizeof(buf)-5;
+  if (r->recv(buf+4, &buflen)) {
+    //reconstruct buffer
+    buflen+=4;
+    buf[0]=r->headerTo();
+    buf[1]=r->headerFrom();
+    buf[2]=r->headerId();
+    buf[3]=r->headerFlags();
+    buf[buflen]=0; //terminate string
+
+    //convert buffer into text string
+    for(int i=0;i<buflen;i++) rx[i] = (buf[i]=='\t' || (buf[i]>=32 && buf[i]<=127) ? buf[i]: '.');
+    rx[buflen] = 0;
+
+    //extract values and id
+    val[0] = 0;
+    vallen = str2arr(rx, "\t", val);
+    id = val[0];
+
+    //rssi
+    rssi = r->lastRssi();
+
+    //log it
+    rep_write(rx);
+    log_write(rx);
+    idlog_write(id,rx);
+
+    //verbose output
+    fprintf(stdout,"RX\t");
+    fprintDate(stdout);
+    fprintf(stdout,"%d\t%s\n",rssi, rx);
+
+    //mosquitto output
+    mqtt_write();
+  } else {
+    printf("ERR receive failed");
+  }
+}
+
+void Message::mqtt_write() {
+  if(id<0||id>=256) return;
+  printf("PUB\t%s\t%d\n",(node[id].topic+"/id").c_str(),id);
+  printf("PUB\t%s\t%d\n",(node[id].topic+"/rssi").c_str(),rssi);
+  for(int i = 1;i<vallen;i++) {
+    printf("PUB\t%s\t%d\n",node[id].getFieldTopic(i-1).c_str(),val[i]);
+  }
+};
+
+Message msg;
 
 //######################################################
 // COMBINED LOG FILE
@@ -193,7 +292,7 @@ int main (int argc, const char* argv[] )
   setbuf(stdout, NULL);
 
   //read ini file
-  INIReader ini("main.ini");
+  INIReader ini("listen.ini");
 
   if(ini.ParseError() < 0 ) {
     printf("error reading ini file\n");
@@ -212,6 +311,15 @@ int main (int argc, const char* argv[] )
   idlog_enable = ini.GetBoolean("","idlog_enable", false);
 
   printf("log_file=%s idlog=%d rep_interval=%d\n",log_file.c_str(), idlog_enable, rep_interval);
+
+  topic_prefix =  ini.GetString ("","topic_prefix",     "");
+
+  //node definitions
+  for(int i=0;i<256;i++) {
+    node[i].id = i;
+    node[i].topic = topic_prefix + "/" + ini.GetString("node"+to_string(i),"topic",to_string(i));
+    node[i].fields = split(ini.GetString("node"+to_string(i),"fields",""), ","); 
+  }
 
   //init loggers
   log_init();
@@ -271,36 +379,7 @@ int main (int argc, const char* argv[] )
 
     //main loop
     while (!force_exit) {
-        if (rf69.available()) { 
-          uint8_t buf[RH_RF69_MAX_MESSAGE_LEN+5];
-          uint8_t len  = sizeof(buf)-5;
-          
-          if (rf69.recv(buf+4, &len)) {
-            //reconstruct buffer
-            len+=4;
-            buf[0]=rf69.headerTo();
-            buf[1]=rf69.headerFrom();
-            buf[2]=rf69.headerId();
-            buf[3]=rf69.headerFlags();
-            buf[len]=0; //terminate string
-
-	    //convert buffer into text string
-            char rx[100];
-            for(int i=0;i<len;i++) rx[i] = (buf[i]=='\t' || (buf[i]>=32 && buf[i]<=127) ? buf[i]: '.');
-            rx[len] = 0;
-
-            //log it
-            int id = rep_write(rx);
-            log_write(rx);
-            idlog_write(id,rx);
-
-            //verbose output
-            fprintDate(stdout);
-            fprintf(stdout,"%d\t%s\n",(int)rf69.lastRssi(), rx);
-          } else {
-            printf("ERR receive failed");
-          }
-        }
+      if (rf69.available()) msg.process(&rf69);
         
       // Let OS do other tasks
       // For timed critical appliation you can reduce or delete
