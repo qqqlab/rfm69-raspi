@@ -20,13 +20,13 @@
             +----------+    +----------+    +---------+
 ```
 
-The 'listen' C++ daemon listens for incoming messages on the RFM69 radio module. It currently expects tab delimited integer plain text messages from the nodes, with the first integer being the ID of the node, but this is to be expanded to secured and/or two way communication. 
+The ```listen``` C++ daemon listens for incoming messages on the RFM69 radio module. It currently expects tab delimited integer plain text messages from the nodes, with the first integer being the ID of the node, but this is to be expanded to secured and/or two way communication. 
 
-Output from 'listen' is piped into the process.sh bash program, which forwards it to a local or external mosquitto server.
+Output from ```listen``` is piped into the ```process.sh``` bash script, which forwards it to a local or external mosquitto server.
 
-With the mqtt2db.sh script sensor data from the mqtt server can be logged in a Mysql/MariaDB database and from there used for graphing the data on a website.
+With the ```mqtt2db.sh``` script sensor data from the mqtt server can be logged in a Mysql/MariaDB database and from there used for graphing the data on a website.
 
-All configuration for the C++, BASH, and PHP parts is in the conf/listen.ini, see details there.
+All configuration for the C++, BASH, and PHP parts is in```conf/listen.ini```, see details there.
 
 Directories:
  - listen - C++ source
@@ -34,9 +34,9 @@ Directories:
  - bin - Binaries and scripts
  - html - Website
  - db - Database creation script
+ - lib - External libraries
 
 ## Listen Installation
-
 
 ```sh
 wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.50.tar.gz;
@@ -87,9 +87,9 @@ apt-get install mariadb-server
 mysql < db/create_db.sql
 ```
 
-To log on the same machine as 'listen', adapt config/listen.ini, add username/password as required (or create file ~/.my.cnf). Start the service with ```bin/listen | bin/process.sh &```
+To log on the same machine as ```listen```, adapt config/listen.ini, add username/password as required (or create file ~/.my.cnf). Start the service with ```bin/listen | bin/process.sh &```
 
-To log on a different machine as 'listen', set the db_* and mqtt_* settings in listen.ini and start the service with ```bin/mqtt2db.sh &``` 
+To log on a different machine as ```listen```, set the db_* and mqtt_* settings in listen.ini and start the service with ```bin/mqtt2db.sh &``` 
 
 Get row count
 ```
@@ -111,7 +111,7 @@ Note: no need to symlink the config directory, the php script will execute on th
 
 ## Many Thanks To
 
-[Broadcom BCM2835 Library](http://www.airspayce.com/mikem/bcm2835/)<br \>
-[RadioHead for Raspi](https://github.com/hallard/RadioHead)<br \>
-[C++ INI Parser](https://github.com/benhoyt/inih)<br \>
-[Bash INI Parser](https://github.com/rudimeier/bash_ini_parser)<br \>
+ - [Broadcom BCM2835 Library](http://www.airspayce.com/mikem/bcm2835/)
+ - [RadioHead for Raspi](https://github.com/hallard/RadioHead)
+ - [C++ INI Parser](https://github.com/benhoyt/inih)
+ - [Bash INI Parser](https://github.com/rudimeier/bash_ini_parser)
