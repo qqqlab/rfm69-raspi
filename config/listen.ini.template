@@ -4,7 +4,7 @@
 db_host = 127.0.0.1
 db_name = sensor
 db_user = root
-db_pass = blabla
+db_pass = [[PASSWORD]]
 
 #=========================================
 # mqtt server

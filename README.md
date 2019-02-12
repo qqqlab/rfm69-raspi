@@ -115,3 +115,5 @@ Note: no need to symlink the config directory, the php script will execute on th
  - [RadioHead for Raspi](https://github.com/hallard/RadioHead)
  - [C++ INI Parser](https://github.com/benhoyt/inih)
  - [Bash INI Parser](https://github.com/rudimeier/bash_ini_parser)
+ - [dygraphs JavaScript charting library](http://dygraphs.com)
+

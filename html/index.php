@@ -2,6 +2,7 @@
 require_once('config.php');
 
 //group by interval in seconds
+$interval=0;
 if(isset($_GET['interval'])) $interval=$_GET['interval'];
 if($interval<=0) $interval=300;
 
@@ -20,7 +21,7 @@ if(isset($_GET['go'])) {
   $topics = join("','",array_keys($_GET['t']));
   $sql = "
 SELECT 
-  FROM_UNIXTIME((UNIX_TIMESTAMP(ts) DIV $interval) * $interval), 
+  (UNIX_TIMESTAMP(ts) DIV $interval) * $interval * 1000, 
   topic,
   avg(val) 
 FROM log 
@@ -48,12 +49,12 @@ GROUP BY 1,2 ORDER BY 1
     $row[ $col[$topic] ] = $val;
   } 
   $d .= jsrow($ts, $row).']';
+
+  $json_labels = '["date","'. join('","',array_keys($_GET['t'])) .'"]';
+  graph($d, $json_labels) ;
+
+//  echo "<pre>$d</pre>";
 }
-
-
-$json_labels = '["date","'. join('","',array_keys($_GET['t'])) .'"]';
-graph($d, $json_labels) ;
-
 
 
 
@@ -75,7 +76,8 @@ echo "<table border=0><tr>";
 while($r = $res->fetch_row()) {
   $topic = $r[0];
   echo "<td>";
-  echo "<input name='t[$topic]' type='checkbox' " . ($_GET['t'][$topic] ? 'checked' : '') . ">$topic ";
+  echo "<input name='t[$topic]' type='checkbox' " . (@$_GET['t'][$topic] ? 'checked' : '') . ">";
+  echo "$topic ";
   echo "</td>";
   $i++;
   if($i%5==0) echo '</tr><tr>';
@@ -105,9 +107,9 @@ function checkAll(formname, checktoggle)
 <?php
 
 
-
+//javascript timestamp is in milliseconds
 function jsrow($ts,$row) {
-  return '[ new Date("'.$ts.'"),'.join(',',$row)."],\n";
+  return '[new Date('.$ts.'),'.join(',',$row)."],\n";
 }
 
 
@@ -120,7 +122,7 @@ function graph($json_data,$json_labels) {
 <link rel="stylesheet" src="dygraph.css" />
 </head>
 <body>
-<div id="graphdiv" style="width:100%;height:100%"></div>
+<div id="graphdiv" style="width:100%;height:80%"></div>
 <script type="text/javascript">
   g = new Dygraph(
 
