@@ -23,7 +23,7 @@ make
 ```
 
 If you want to use the latest versions of the included libraries:
-```bash
+```sh
 cd lib
 git clone https://github.com/benhoyt/inih.git
 git clone https://github.com/hallard/RadioHead.git
@@ -46,4 +46,36 @@ Debugging
 
  - edit process.sh and add the -d flag to mosquitto_pub
  - enter: ```mosquitto_sub -t "#" -v``` and in a second ssh session enter:```echo "PUB topic message" | ./process.sh``` 
+
+## Logging to Database
+
+Install
+```sh
+apt-get install mariadb-server
+mysql < db/create_db.sql
+```
+
+adapt process.sh, add username/password as required if file ~/.my.cnf does not exist
+
+get row count
+```
+mysql -e"select count(*) from sensor.log;" -s --skip-column-names
+```
+
+## Graphs
+
+```
+apt-get install apache2 mariadb-server php libapache2-mod-php php-mysql
+```
+
+## Graphing Website
+
+Install
+```sh
+apt-get install apache2 php php-mysql libapache2-mod-php
+ln -s <html folder of this repository> /var/www/sensor
+```
+edit config.php and set database info
+
+browse to http://localhost/sensor/graph.php
 
