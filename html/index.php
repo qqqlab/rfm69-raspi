@@ -1,8 +1,5 @@
 <?php
-error_reporting( E_ALL);
-
 require_once('config.php');
-
 
 //group by interval in seconds
 if(isset($_GET['interval'])) $interval=$_GET['interval'];
