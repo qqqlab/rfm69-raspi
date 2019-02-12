@@ -10,8 +10,10 @@ RADIOHEADBASE = ../lib/RadioHead
 INCLUDE       = -I$(RADIOHEADBASE)
 LIBBASE       = ../lib
 MAIN          = listen
+OUTPATH       = ../bin
 
 all: ${MAIN}
+	mv $(MAIN) $(OUTPATH) 
 
 RasPi.o: $(RADIOHEADBASE)/RHutil/RasPi.cpp
 	$(CC) $(CFLAGS) -c $(RADIOHEADBASE)/RHutil/RasPi.cpp $(INCLUDE)

@@ -1,3 +1,5 @@
+#define INIFILE "../config/listen.ini"
+
 #include <vector>
 #include <string>
 using namespace std;
@@ -292,10 +294,10 @@ int main (int argc, const char* argv[] )
   setbuf(stdout, NULL);
 
   //read ini file
-  INIReader ini("listen.ini");
+  INIReader ini(INIFILE);
 
   if(ini.ParseError() < 0 ) {
-    printf("error reading ini file\n");
+    printf("error reading ini file '%s'\n",INIFILE);
     return 2;
   }
 

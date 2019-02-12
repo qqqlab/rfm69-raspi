@@ -2,9 +2,11 @@
 
 This daemon listens for incoming messages on the RFM69 radio module. It expects tab delimited integer plain text messages from the nodes, with the first integer being the ID of the node. 
 
-The listen.ini file specifies what is logged, see details there.
+The conf/listen.ini file specifies what is logged, see details there.
 
-## Installation
+Logs to file(s) / mosquitto / database
+
+## Listen Installation
 
 
 ```sh
@@ -19,6 +21,7 @@ cd ..
 cd listen
 make
 
+cd ../bin
 ./listen &
 ```
 
@@ -55,9 +58,11 @@ apt-get install mariadb-server
 mysql < db/create_db.sql
 ```
 
-adapt process.sh, add username/password as required if file ~/.my.cnf does not exist
+To log on the same machine as 'listen', adapt process.sh, add username/password as required (or create file ~/.my.cnf). Start the service with ```bin/listen | bin/process.sh &```
 
-get row count
+To log on a different machine as 'listen', set the db_* and mqtt_* settings in listen.ini and start the service with ```bin/mqtt2db.sh &``` 
+
+Get row count
 ```
 mysql -e"select count(*) from sensor.log;" -s --skip-column-names
 ```
@@ -75,7 +80,13 @@ Install
 apt-get install apache2 php php-mysql libapache2-mod-php
 ln -s <html folder of this repository> /var/www/sensor
 ```
-edit config.php and set database info
+Edit html/config.php and set database info
 
 browse to http://localhost/sensor/graph.php
 
+## Thanks To
+
+[Broadcom BCM2835 Library](http://www.airspayce.com/mikem/bcm2835/)
+[RadioHead for Raspi](https://github.com/hallard/RadioHead)
+[C++ INI Parser](https://github.com/benhoyt/inih)
+[Bash INI Parser](https://github.com/rudimeier/bash_ini_parser)
