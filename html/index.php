@@ -17,7 +17,7 @@ if(isset($_GET['go'])) {
   foreach($col as $k=>$v) $col[$k] = $c++;
   $colcnt = $c;
 
-  //build the json data array with columns data,val1,val2,val3,...
+  //build the json data array with columns ts,val1,val2,val3,...
   $topics = join("','",array_keys($_GET['t']));
   $sql = "
 SELECT 
