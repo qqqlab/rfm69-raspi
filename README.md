@@ -1,4 +1,4 @@
-## Raspberry Pi RFM69 Listener
+## Raspberry Pi RFM69 
 
 ```
 +--------+  +----------+    +----------+
