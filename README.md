@@ -1,4 +1,4 @@
-## Raspberry Pi RFM69 
+## RFM69 Radio for Raspberry Pi
 
 ```
 +--------+  +----------+    +----------+

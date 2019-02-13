@@ -17,7 +17,7 @@ if(isset($_GET['go'])) {
   foreach($col as $k=>$v) $col[$k] = $c++;
   $colcnt = $c;
 
-  //build the json data array with columns ts,val1,val2,val3,...
+  //build the json data array with columns data,val1,val2,val3,...
   $topics = join("','",array_keys($_GET['t']));
   $sql = "
 SELECT 
@@ -57,20 +57,12 @@ GROUP BY 1,2 ORDER BY 1
 }
 
 
-
-
-
-
-
-
-
-
 //==================================================
 //form
 //==================================================
 echo "<br><br><br><form name='form1'>";
 
-$res = $db->query("select distinct topic from log order by 1");
+$res = $db->query("select distinct topic from log order by substring_index(topic,'/',-1),1");
 $i=0;
 echo "<table border=0><tr>";
 while($r = $res->fetch_row()) {
