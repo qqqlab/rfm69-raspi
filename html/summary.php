@@ -40,11 +40,11 @@ echo '
 <div class="row"><div class="col" id="g5"></div><div class="col" id="g6"></div></div>
 ';
 
-graph('g1',['title'=>'vbat','topic'=>'%/vbat%']);
-graph('g2',['title'=>'lux','topic'=>'%/lux']);
-graph('g3',['title'=>'vcc','topic'=>'%/vcc']);
-graph('g4',['title'=>'vref','topic'=>'%/vref1']);
-graph('g5',['title'=>'rssi','topic'=>'%/rssi']);
-graph('g6',['title'=>'uptime','topic'=>'%/sec']);
+graph('g1',['title'=>'Vbat (mV)','topic'=>'%/vbat%']);
+graph('g2',['title'=>'Light (0.01 lux)','topic'=>'%/lux']);
+graph('g3',['title'=>'Vcc (mV)','topic'=>'%/vcc']);
+graph('g4',['title'=>'Vref (mV)','topic'=>'%/vref1']);
+graph('g5',['title'=>'RSSI (dB)','topic'=>'%/rssi']);
+graph('g6',['title'=>'Uptime (seconds)','topic'=>'%/sec']);
 
 echo '</body></html>';
