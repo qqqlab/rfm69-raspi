@@ -52,17 +52,20 @@ int str2arr(const char* str, const char* seps, int *output)
   return i;
 }
 
+vector<string> split(const string& s, string c) {
+   vector<string> v;
+   string::size_type i = 0;
+   string::size_type j = s.find(c);
 
-vector<string> split(string str, string sep){
-    char* cstr=const_cast<char*>(str.c_str());
-    char* current;
-    vector<std::string> arr;
-    current=strtok(cstr,sep.c_str());
-    while(current != NULL){
-        arr.push_back(current);
-        current=strtok(NULL, sep.c_str());
-    }
-    return arr;
+   while (j != string::npos) {
+      v.push_back(s.substr(i, j-i));
+      i = ++j;
+      j = s.find(c, j);
+
+      if (j == string::npos)
+         v.push_back(s.substr(i, s.length()));
+   }
+   return v;
 }
 
 int rep_write(char *rx);
@@ -76,7 +79,8 @@ class Node {
     vector<string> fields;
 
 string getFieldTopic(int fieldno) {
-  if(fieldno>=0 && fieldno < fields.size() ) { 
+  if(fieldno>=0 && fieldno < fields.size() ) {
+    if(fields[fieldno] == "") return "";
     return topic + "/" + fields[fieldno];
   }else{ 
     return topic + "/" + to_string(fieldno+1);
@@ -148,7 +152,8 @@ void Message::mqtt_write() {
   printf("PUB\t%s\t%d\n",(node[id].topic+"/id").c_str(),id);
   printf("PUB\t%s\t%d\n",(node[id].topic+"/rssi").c_str(),rssi);
   for(int i = 1;i<vallen;i++) {
-    printf("PUB\t%s\t%d\n",node[id].getFieldTopic(i-1).c_str(),val[i]);
+    string topic = node[id].getFieldTopic(i-1);
+    if(topic!="") printf("PUB\t%s\t%d\n",topic.c_str(),val[i]);
   }
 };
 

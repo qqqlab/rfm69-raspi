@@ -52,33 +52,37 @@ topic_prefix=/mysensors
 # 'fields' are the topics for the fields, if not present field number will be used
 # so, example below will create topics /mysensors/1-s6/vcc,  /mysensors/1-s6/vtx, etc
 # without this section the topics would be  /mysensors/1/1,  /mysensors/1/2, etc
+# fields with name "" are not output, undefined fields are output as number
 
 [node1]
 topic=1-s6
-fields=vcc,vtx,vsol,cnt,sec
+fields=vcc,vtx,vsol,cnt,sec,6,7,8,,,,
 
 [node2]
 topic=2
-fields=vcc,vtx,vsol,cnt,sec
+fields=vcc,vtx,vsol,cnt,sec,,,,
 
 [node3]
 topic=3-lux
-fields=vcc,lux,vbat1,vbat2,vbat4,vbatx
+fields=vcc,lux,vbat1,vbat2,vbat4,,,,,
 
 [node4]
 topic=4
-fields=vcc,vtx,vsol,cnt,sec
+fields=vcc,vtx,vsol,cnt,sec,,,,
 
 [node5]
 topic=5-v26
-fields=vcc,vtx,vsol,cnt,sec,vbat,vref1,vref2
+fields=vcc,vtx,vsol,cnt,sec,vbat,vref1,vref2,,,,
 
 [node6]
 topic=6-v26
-fields=vcc,vtx,vsol,cnt,sec,vbat,vref1,vref2
+fields=vcc,vtx,vsol,cnt,sec,vbat,vref1,vref2,,,,
 
 [node7]
 topic=7-v26
-fields=vcc,vtx,vsol,cnt,sec,vbat,vref1,vref2
+fields=vcc,vtx,vsol,cnt,sec,vbat,vref1,vref2,,,,
 
+[node8]
+topic=8-v26
+fields=vcc,vtx,vsol,cnt,sec,vbat,vref1,vref2,,,,
 
