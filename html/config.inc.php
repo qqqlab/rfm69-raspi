@@ -22,4 +22,3 @@ $ini = parse_ini_string($s,true);
 //=======================================
 $db = new mysqli($ini['db_host'],$ini['db_user'],$ini['db_pass'],$ini['db_name']);
 if($db->connect_error) die("db connect error ".$db->connect_error);
-

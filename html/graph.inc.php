@@ -1,15 +1,22 @@
 <?php
-require_once('config.php');
+// create a graph from log data
+// usage:
+// call graph_head() in <head> section
+// place <div id="g1"> in the <body> and call graph('g1',[arguments])
 
+require_once('config.inc.php');
+
+function graph($div, $arg) {
+global $db;
 //GET parameters
 //t[topic]: topics to show (at least one required)
 //topic: topic where clause, eg '%/vbat'
 //interval: interval in seconds, default 300
 //title: graph title
-$t = @$_GET['t'];
-$topic = @$_GET['topic']; 
-$interval = @$_GET['interval'];
-$title = @$_GET['title'];
+$t = @$arg['t'];
+$topic = @$arg['topic']; 
+$interval = @$arg['interval'];
+$title = @$arg['title'];
 
 //defaults
 if($interval<=0) $interval=300;
@@ -61,33 +68,32 @@ while($r = $res->fetch_row()) {
   }
   $row[ $col[$topic] ] = $val;
 } 
+if(!$row) die("no data");
 $d .= '[new Date('.$ts.'),'.join(',',$row)."],\n";
 
 $json_labels = '["date","'. join('","',array_keys($t)) .'"]';
 
 
 //output the graph
-?>
-<html>
-<head>
+echo '<script type="text/javascript">';
+echo $div.'= new Dygraph(document.getElementById("'.$div.'"),';
+echo "[$d],{";
+echo "labels: $json_labels,";
+echo "title: '$title',";
+echo "
+legend: 'always',
+labelsSeparateLines: true,
+});
+</script>
+";
+}
+
+function graph_head() {
+echo '
 <script type="text/javascript" src="dygraph.min.js"></script>
 <link rel="stylesheet" src="dygraph.css" />
 <style>
   .dygraph-title { text-align: center; }
   .dygraph-legend { text-align: right; }
-</style>
-</head>
-<body style="padding:0px;margin:0px">
-<div id="graphdiv" style="width:100%;height:100%;padding:0px;margin:0px"></div>
-<script type="text/javascript">
-g = new Dygraph(document.getElementById("graphdiv"),
-<?php
-echo "[$d],{";
-echo "labels: $json_labels,";
-echo "title: '$title',";
-?>
-legend: 'always',
-labelsSeparateLines: true,
-});
-</script>
-
+</style>';
+}
