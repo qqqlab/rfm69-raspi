@@ -1,0 +1,77 @@
+#NOTE: use version 2.3, not 3 (mem_limit not supported in v3)
+version: "2.3"
+services:
+
+
+###################################################################################
+# mysql5.5 
+###################################################################################
+  mysql55:
+    container_name: mysql55
+    image: mysql:5.5
+    labels:
+      traefik.enable: "false"
+    volumes:
+    - ./mysql55/vol:/var/lib/mysql
+    environment:
+    - "MYSQL_ROOT_PASSWORD=${DBPW}"
+    ports:
+    - "127.0.0.1:3306:3306"
+    restart: always
+    mem_limit: 1024mb
+
+
+###################################################################################
+# mosquitto - touch mqtt/config/mosquitto.conf
+###################################################################################
+  mqtt:
+    image: eclipse-mosquitto:latest
+    container_name: mqtt
+    restart: always
+    ports:
+      - "${IP}:1883:1883"
+      - "${IP}:9001:9001"
+    volumes:
+      - ./mqtt/config:/mosquitto/config
+      - ./mqtt/data:/mosquitto/data
+      - ./mqtt/log:/mosquitto/log
+
+
+###################################################################################
+# grafana
+###################################################################################
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    volumes:
+    - ./grafana/conf:/etc/grafana
+    - ./grafana/data:/var/lib/grafana
+    ports:
+    - "3000:3000"
+    links:
+    - mysql55:db
+    restart: always
+    mem_limit: 1024mb
+
+
+###################################################################################
+# sensor 
+###################################################################################
+  sensor:
+    container_name: sensor
+    image: sensor
+    build:
+      context: ./sensor
+    environment:
+    - "DB_HOST=db"
+    - "DB_NAME=sensor"
+    - "DB_USER=root"
+    - "DB_PASS=${DBPW}"
+    - "MQTT_HOST=mqtt"
+    - "MQTT_TOPIC=#"
+    links:
+    - mqtt:mqtt
+    - mysql55:db
+    restart: always
+    mem_limit: 128mb
+
