@@ -9,8 +9,6 @@ services:
   mysql55:
     container_name: mysql55
     image: mysql:5.5
-    labels:
-      traefik.enable: "false"
     volumes:
     - ./mysql55/vol:/var/lib/mysql
     environment:
@@ -22,7 +20,8 @@ services:
 
 
 ###################################################################################
-# mosquitto - touch mqtt/config/mosquitto.conf
+# mosquitto  
+# mkdir mqtt ; mkdir mqtt/conf ; touch mqtt/conf/mosquitto.conf
 ###################################################################################
   mqtt:
     image: eclipse-mosquitto:latest
@@ -32,13 +31,14 @@ services:
       - "${IP}:1883:1883"
       - "${IP}:9001:9001"
     volumes:
-      - ./mqtt/config:/mosquitto/config
+      - ./mqtt/conf:/mosquitto/config
       - ./mqtt/data:/mosquitto/data
       - ./mqtt/log:/mosquitto/log
 
 
 ###################################################################################
 # grafana
+# mkdir grafana ; mkdir grafana/data ; chown 472.472 grafana/data
 ###################################################################################
   grafana:
     container_name: grafana
